@@ -44,6 +44,32 @@ $question = $quiz->questions()->create([
     return response()->json($question->load('options'), 201);
 }
 
+public function storeForQuiz(Request $request, $quizId)
+{
+    $data = $request->validate([
+        'title' => 'required|string',
+        'description' => 'nullable|string',
+        'options' => 'required|array|min:2',
+        'options.*.text' => 'required|string',
+        'options.*.is_correct' => 'required|boolean',
+    ]);
+
+    // Ensure the quiz exists
+    $quiz = Quiz::findOrFail($quizId);
+
+    // Create the question for this quiz
+    $question = $quiz->questions()->create([
+        'title' => $data['title'],
+        'description' => $data['description'] ?? null,
+    ]);
+
+    // Create the options
+    foreach ($data['options'] as $option) {
+        $question->options()->create($option);
+    }
+
+    return response()->json($question->load('options'), 201);
+}
 
    
 
