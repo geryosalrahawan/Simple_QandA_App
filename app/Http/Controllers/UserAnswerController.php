@@ -50,6 +50,7 @@ class UserAnswerController extends Controller
         return response()->json([
             'message' => 'Answers submitted successfully.',
             'score' => $score,
+            'quiz_id' => $quizId,
             'total_questions' => $total,
             'percentage' => round(($score / $total) * 100, 2),
         ]);
