@@ -9,10 +9,6 @@ use App\Models\Quiz;
 
 class QuestionController extends Controller
 {
-        public function test()
-    {
-        return "hello";
-    }
 
  // Get all questions for a quiz
     public function index($quizId)
