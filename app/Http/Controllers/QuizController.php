@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Resources\QuizResource;
 
 use App\Models\Quiz;
 use App\Models\Question;
@@ -48,14 +49,15 @@ class QuizController extends Controller
     }
 
     // Show single quiz with questions
-    public function show($id)
-    {
-        $quiz = Quiz::with('questions.options')->find($id);
+public function show($id)
+{
 
-        if (!$quiz) {
-            return response()->json(['error' => 'Quiz not found'], 404);
-        }
+    $quiz = Quiz::with('questions.options')->find($id);
 
-        return $quiz;
+    if (!$quiz) {
+        return response()->json(['message' => 'Quiz not found'], 404);
     }
+
+    return new QuizResource($quiz);
+}
 }

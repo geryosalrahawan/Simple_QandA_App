@@ -6,19 +6,20 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\AuthController;
 
 Route::middleware(['auth:api'])->group(function () {
-Route::get('/questions', [QuestionController::class, 'index']);
-Route::get('/quizzes', [QuizController::class, 'index']);
 
-Route::get('/quizzes/{id}', [QuizController::class, 'show']);
-Route::get('/quizzes/{quizId}/questions', [QuestionController::class, 'index']);
 
-Route::post('/answers/submit', [UserAnswerController::class, 'submit']);
-Route::get('/answers', [UserAnswerController::class, 'index']);
-
+    Route::post('/answers/submit', [UserAnswerController::class, 'submit']);
+    Route::get('/answers', [UserAnswerController::class, 'index']);
+    Route::get('/quizzes/{id}', [QuizController::class, 'show']);
+    
 });
 
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
+
+    Route::get('/questions', [QuestionController::class, 'index']);
+Route::get('/quizzes', [QuizController::class, 'index']);
+Route::get('/quizzes/{quizId}/questions', [QuestionController::class, 'index']);
     Route::post('/quizzes', [QuizController::class, 'store']);
     Route::post('/questions', [QuestionController::class, 'store']);
 
