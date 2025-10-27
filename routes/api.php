@@ -8,9 +8,9 @@ use App\Http\Controllers\AuthController;
 Route::middleware(['auth:api'])->group(function () {
 
 
-    Route::post('/answers/submit', [UserAnswerController::class, 'submit']);
-    Route::get('/answers', [UserAnswerController::class, 'index']);
-    Route::get('/quizzes/{id}', [QuizController::class, 'show']);
+    Route::post('/answers/submit', [UserAnswerController::class, 'submit']);//subimtting ansewer
+    Route::get('/answers', [UserAnswerController::class, 'index']);//show the user answers
+    Route::get('/quizzes/{id}', [QuizController::class, 'show']);//getting a specific quiz
     
 });
 
@@ -18,17 +18,20 @@ Route::middleware(['auth:api'])->group(function () {
 Route::middleware(['auth:api', 'admin'])->group(function () {
 
     Route::get('/questions', [QuestionController::class, 'index']);
-Route::get('/quizzes', [QuizController::class, 'index']);
-Route::get('/quizzes/{quizId}/questions', [QuestionController::class, 'index']);
+    Route::get('/quizzes', [QuizController::class, 'index']);
+    Route::get('/quizzes/{quizId}/questions', [QuestionController::class, 'index']);
+
     Route::post('/quizzes', [QuizController::class, 'store']);
-    Route::post('/questions', [QuestionController::class, 'store']);
+    
+    // Route::post('/questions', [QuestionController::class, 'store']);
 
     Route::post('/quizzes/{quizId}/questions', [QuestionController::class, 'storeForQuiz']);
 
 
     Route::put('/questions/{id}', [QuestionController::class, 'update']);
-Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
+    Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
 
+    Route::patch('/users/{id}/role', [UserController::class, 'updateRole']);
 
 });
 

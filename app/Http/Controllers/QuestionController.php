@@ -17,29 +17,30 @@ class QuestionController extends Controller
             ->where('quiz_id', $quizId)
             ->get();
     }
-public function store(Request $request)
-{
-    $data = $request->validate([
-        'quiz_id' => 'required|integer|exists:quizzes,id',
-        'title' => 'required|string',
-        'description' => 'nullable|string',
-        'options' => 'required|array|min:2',
-        'options.*.text' => 'required|string',
-        'options.*.is_correct' => 'required|boolean',
-    ]);
-$quiz = Quiz::findOrFail($data['quiz_id']);
-$question = $quiz->questions()->create([
-    'title' => $data['title'],
-    'description' => $data['description'] ?? null,
-]);
+// public function store(Request $request)
+// {
+//     $data = $request->validate([
+//         'quiz_id' => 'required|integer|exists:quizzes,id',
+//         'title' => 'required|string',
+//         'description' => 'nullable|string',
+//         'options' => 'required|array|min:2',
+//         'options.*.text' => 'required|string',
+//         'options.*.is_correct' => 'required|boolean',
+//     ]);
+// $quiz = Quiz::findOrFail($data['quiz_id']);
+// $question = $quiz->questions()->create([
+//     'title' => $data['title'],
+//     'description' => $data['description'] ?? null,
+// ]);
 
-    foreach ($data['options'] as $option) {
-        $question->options()->create($option);
-    }
+//     foreach ($data['options'] as $option) {
+//         $question->options()->create($option);
+//     }
 
-    return response()->json($question->load('options'), 201);
-}
+//     return response()->json($question->load('options'), 201);
+// }
 
+//add a new question to a quiz
 public function storeForQuiz(Request $request, $quizId)
 {
     $data = $request->validate([
