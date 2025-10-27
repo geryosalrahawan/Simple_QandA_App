@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Enums\UserRole;
 
 class AdminMiddleware
 {
@@ -12,7 +13,7 @@ class AdminMiddleware
     {
         $user = auth()->user();
 
-        if (!$user || $user->role !== 'admin') {
+        if (!$user || $user->role !== UserRole::Admin) {
             return response()->json(['error' => 'Access denied. Admins only.'], 403);
         }
 

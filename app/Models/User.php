@@ -20,7 +20,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $casts = [
-        'role' => UserRole::class,//Ensure thet the roles used are only the roles in the UserRole enum 
+        'role' => UserRole::class,//Ensure thet the roles used are only the roles in the UserRole enum
     ];
 
     public function getJWTIdentifier()
