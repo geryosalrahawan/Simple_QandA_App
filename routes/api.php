@@ -4,16 +4,19 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\UserAnswerController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+
 
 Route::middleware(['auth:api'])->group(function () {
 
-
+    Route::get('/user',[AuthController::class, 'me']);
+    
     Route::post('/answers/submit', [UserAnswerController::class, 'submit']);//subimtting ansewer
     Route::get('/answers', [UserAnswerController::class, 'index']);//show the user answers
     Route::get('/quizzes/{id}', [QuizController::class, 'show']);//getting a specific quiz
     
 });
-
+Route::get('/yes', [UserController::class, 'test']);
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
 

@@ -1,10 +1,17 @@
 <?php
+namespace App\Http\Controllers;
+
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function test(Request $request){
+        
+        return UserRole::Admin;
+        
+    }
     public function updateRole(Request $request, $id)
     {
         // if (auth()->user()->role !== UserRole::Admin) {
