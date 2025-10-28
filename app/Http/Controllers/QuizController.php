@@ -16,37 +16,64 @@ class QuizController extends Controller
     }
 
     // Create a new quiz
+    // public function store(Request $request)
+    // {
+    //     $data = $request->validate([
+    //         'title' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //         'questions' => 'required|array|min:1',
+    //         'questions.*.title' => 'required|string',
+    //         'questions.*.description' => 'nullable|string',
+    //         'questions.*.options' => 'required|array|min:2',
+    //         'questions.*.options.*.text' => 'required|string',
+    //         'questions.*.options.*.is_correct' => 'required|boolean',
+    //     ]);
+
+    //     $quiz = Quiz::create([
+    //         'title' => $data['title'],
+    //         'description' => $data['description'] ?? null,
+    //     ]);
+
+    //     foreach ($data['questions'] as $qData) {
+    //         $question = $quiz->questions()->create([
+    //             'title' => $qData['title'],
+    //             'description' => $qData['description'] ?? null,
+    //         ]);
+
+    //         foreach ($qData['options'] as $option) {
+    //             $question->options()->create($option);
+    //         }
+    //     }
+
+    //     return response()->json($quiz->load('questions.options'), 201);
+    // }
+
+
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'questions' => 'required|array|min:1',
-            'questions.*.title' => 'required|string',
-            'questions.*.description' => 'nullable|string',
-            'questions.*.options' => 'required|array|min:2',
-            'questions.*.options.*.text' => 'required|string',
-            'questions.*.options.*.is_correct' => 'required|boolean',
-        ]);
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+    ]);
 
-        $quiz = Quiz::create([
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-        ]);
+    $quiz = Quiz::create($validated);
 
-        foreach ($data['questions'] as $qData) {
+    // Only add questions if they exist in request
+    if ($request->has('questions')) {
+        foreach ($request->questions as $qData) {
             $question = $quiz->questions()->create([
                 'title' => $qData['title'],
-                'description' => $qData['description'] ?? null,
             ]);
 
-            foreach ($qData['options'] as $option) {
-                $question->options()->create($option);
+            foreach ($qData['options'] as $optData) {
+                $question->options()->create($optData);
             }
         }
-
-        return response()->json($quiz->load('questions.options'), 201);
     }
+
+    return response()->json($quiz->load('questions.options'), 201);
+}
+
 
     // Show single quiz with questions
 public function show($id)
@@ -60,4 +87,29 @@ public function show($id)
 
     return new QuizResource($quiz);
 }
+
+
+public function update(Request $request, $id)
+{
+    $quiz = Quiz::findOrFail($id);
+
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+    ]);
+
+    $quiz->update($validated);
+
+    return response()->json($quiz, 200);
+}
+
+public function destroy($id)
+{
+    $quiz = Quiz::findOrFail($id);
+    $quiz->delete();
+
+    return response()->json(['message' => 'Quiz deleted successfully'], 200);
+}
+
+
 }

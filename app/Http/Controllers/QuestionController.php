@@ -71,24 +71,40 @@ public function storeForQuiz(Request $request, $quizId)
    
 
     // Update a question
-    public function update(Request $request, $id)
-    {
-        $question = Question::findOrFail($id);
-        $data = $request->validate([
-            'title' => 'sometimes|required|string',
-            'description' => 'nullable|string'
-        ]);
+   public function update(Request $request, $id)
+{
+    $question = Question::findOrFail($id);
 
-        $question->update($data);
-        return response()->json($question->load('options'));
+    $data = $request->validate([
+        'title' => 'required|string',
+        'description' => 'nullable|string',
+        'options' => 'nullable|array|min:2',
+        'options.*.text' => 'required_with:options|string',
+        'options.*.is_correct' => 'required_with:options|boolean',
+    ]);
+
+    $question->update([
+        'title' => $data['title'],
+        'description' => $data['description'] ?? null,
+    ]);
+
+    if (isset($data['options'])) {
+        // Delete old options and recreate
+        $question->options()->delete();
+        foreach ($data['options'] as $option) {
+            $question->options()->create($option);
+        }
     }
 
-    // Delete a question
-    public function destroy($id)
-    {
-        $question = Question::findOrFail($id);
-        $question->delete();
+    return response()->json($question->load('options'), 200);
+}
 
-        return response()->json(['message' => 'Question deleted successfully']);
-    }
+public function destroy($id)
+{
+    $question = Question::findOrFail($id);
+    $question->delete();
+
+    return response()->json(['message' => 'Question deleted successfully'], 200);
+}
+
 }

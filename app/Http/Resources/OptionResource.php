@@ -12,12 +12,12 @@ class OptionResource extends JsonResource
         return [
             'id' => $this->id,
             'text' => $this->text,
-                        $this->mergeWhen(
-                auth()->check() && auth()->user()->role  === UserRole::Admin,
-                [
+                //         $this->mergeWhen(
+                // auth()->check() && auth()->user()->role  === UserRole::Admin,
+                // [
                     'is_correct' => $this->is_correct,
-                ]
-            ),
+        //         ]
+        //     ),
         ];
     }
 }

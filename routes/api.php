@@ -11,33 +11,38 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::get('/user',[AuthController::class, 'me']);
     
-    Route::post('/answers/submit', [UserAnswerController::class, 'submit']);//subimtting ansewer
-    Route::get('/answers', [UserAnswerController::class, 'index']);//show the user answers
+    Route::get('/quizzes', [QuizController::class, 'index']);
     Route::get('/quizzes/{id}', [QuizController::class, 'show']);//getting a specific quiz
-    
+
+    Route::post('/quizzes/{id}/submit', [QuizAttemptController::class, 'submit']);
+    Route::get('/my-attempts', [QuizAttemptController::class, 'history']);
 });
-Route::get('/yes', [UserController::class, 'test']);
+
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
-
-    Route::get('/questions', [QuestionController::class, 'index']);
-    Route::get('/quizzes', [QuizController::class, 'index']);
-    Route::get('/quizzes/{quizId}/questions', [QuestionController::class, 'index']);
-
-    Route::post('/quizzes', [QuizController::class, 'store']);
     
-    // Route::post('/questions', [QuestionController::class, 'store']);
-
+    Route::get('/questions', [QuestionController::class, 'index']);
+    Route::get('/quizzes/{quiz}/questions', [QuestionController::class, 'index']);
+    
+    
+    
+    Route::post('/quizzes', [QuizController::class, 'store']);
     Route::post('/quizzes/{quizId}/questions', [QuestionController::class, 'storeForQuiz']);
 
 
-    Route::put('/questions/{id}', [QuestionController::class, 'update']);
-    Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
+        // Quizzes
+    Route::put('/quizzes/{quiz}', [QuizController::class, 'update']);
+    Route::delete('/quizzes/{quiz}', [QuizController::class, 'destroy']);
+
+    // Questions
+    Route::put('/questions/{question}', [QuestionController::class, 'update']);
+    Route::delete('/questions/{question}', [QuestionController::class, 'destroy']);
 
     Route::patch('/users/{id}/role', [UserController::class, 'updateRole']);
 
-});
+    Route::get('/analytics', [QuizAttemptController::class, 'analytics']);
 
+});
 
 
 
@@ -51,4 +56,5 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
 });
