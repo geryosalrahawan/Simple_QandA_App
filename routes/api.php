@@ -5,6 +5,7 @@ use App\Http\Controllers\UserAnswerController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\QuizAttemptController;
 
 
 Route::middleware(['auth:api'])->group(function () {
@@ -30,7 +31,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::post('/quizzes/{quizId}/questions', [QuestionController::class, 'storeForQuiz']);
 
 
-        // Quizzes
+    // Quizzes
     Route::put('/quizzes/{quiz}', [QuizController::class, 'update']);
     Route::delete('/quizzes/{quiz}', [QuizController::class, 'destroy']);
 
