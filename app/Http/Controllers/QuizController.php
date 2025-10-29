@@ -54,6 +54,7 @@ class QuizController extends Controller
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'nullable|string',
+        'duration' => 'required|integer|min:30',
     ]);
 
     $quiz = Quiz::create($validated);
@@ -96,6 +97,7 @@ public function update(Request $request, $id)
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'nullable|string',
+        'duration' => 'sometimes|integer|min:30',
     ]);
 
     $quiz->update($validated);

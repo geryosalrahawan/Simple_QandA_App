@@ -17,6 +17,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/quizzes/{id}/submit', [QuizAttemptController::class, 'submit']);
     Route::get('/my-attempts', [QuizAttemptController::class, 'history']);
+    Route::post('/quizzes/{id}/start', [QuizAttemptController::class, 'start']);
+
 });
 
 
@@ -42,6 +44,9 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::patch('/users/{id}/role', [UserController::class, 'updateRole']);
 
     Route::get('/analytics', [QuizAttemptController::class, 'analytics']);
+
+
+
 
 });
 

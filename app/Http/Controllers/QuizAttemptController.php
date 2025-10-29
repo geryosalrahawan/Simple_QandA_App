@@ -10,37 +10,58 @@ use Illuminate\Support\Facades\Auth;
 class QuizAttemptController extends Controller
 {
     // --- Submit a quiz ---
-    public function submit(Request $request, $quizId)
-    {
-        $request->validate([
-            'answers' => 'required|array',
-        ]);
+public function submit(Request $request, $quizId)
+{
+    $quiz = Quiz::findOrFail($quizId);
 
-        $quiz = Quiz::with('questions.options')->findOrFail($quizId);
+    $attempt = QuizAttempt::where('user_id', auth()->id())
+        ->where('quiz_id', $quizId)
+        ->latest()
+        ->first();
 
-        $score = 0;
-        foreach ($quiz->questions as $question) {
-            $correctOption = $question->options->firstWhere('is_correct', true);
-            if (isset($request->answers[$question->id]) &&
-                $request->answers[$question->id] == $correctOption->id) {
-                $score++;
-            }
-        }
-
-        $attempt = QuizAttempt::create([
-            'quiz_id' => $quiz->id,
-            'user_id' => Auth::id(),
-            'answers' => $request->answers,
-            'score' => $score,
-        ]);
-
-        return response()->json([
-            'message' => 'Quiz submitted!',
-            'score' => $score,
-            'total' => $quiz->questions->count(),
-            'attempt' => $attempt
-        ]);
+    if (!$attempt) {
+        return response()->json(['error' => 'Quiz attempt not found.'], 404);
     }
+
+    $elapsed = now()->diffInSeconds($attempt->started_at);
+
+    if ($elapsed > $quiz->duration) {
+        return response()->json([
+            'error' => '⏰ Time is up! You cannot submit this quiz anymore.'
+        ], 403);
+    }
+
+    $answers = $request->input('answers', []);
+    $score = $this->calculateScore($quiz, $answers);
+
+    $attempt->update([
+        'submitted_at' => now(),
+        'score' => $score
+    ]);
+
+    return response()->json([
+        'message' => 'Quiz submitted successfully',
+        'score' => $score,
+        'total' => $quiz->questions()->count(),
+        'time_taken' => $elapsed
+    ]);
+}
+
+
+private function calculateScore($quiz, $answers)
+{
+    $score = 0;
+
+    foreach ($quiz->questions as $question) {
+        $correctOption = $question->options()->where('is_correct', true)->first();
+
+        if (isset($answers[$question->id]) && $answers[$question->id] == $correctOption->id) {
+            $score++;
+        }
+    }
+
+    return $score;
+}
 
     // --- Get current user's quiz history ---
     public function history()
@@ -73,4 +94,32 @@ class QuizAttemptController extends Controller
 
         return response()->json($data);
     }
+
+
+public function start($id)
+{
+    $quiz = Quiz::findOrFail($id);
+
+    // create or find the active attempt
+    $attempt = QuizAttempt::firstOrCreate(
+        [
+            'user_id' => auth()->id(),
+            'quiz_id' => $quiz->id,
+        ],
+        [
+            'started_at' => now(),
+            'score' => 0,
+            'answers' => json_encode([]),
+        ]
+    );
+
+    return response()->json([
+        'quiz' => $quiz->load('questions.options'),
+        'duration' => $quiz->duration,  //  send duration here
+        'attempt_id' => $attempt->id,
+        'started_at' => $attempt->started_at,
+    ]);
+}
+
+
 }

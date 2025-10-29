@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quizzes', function (Blueprint $table) {
-            //
-        });
+        $table->integer('duration')->default(300); // duration in seconds (5 min)
+    });
     }
 
     /**
